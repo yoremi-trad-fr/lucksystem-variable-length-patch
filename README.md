@@ -2,7 +2,7 @@
 
 **Patch for LuckSystem 2.3.2 to support variable-length translations**
 
-## 🎯 Problem
+##  Problem
 
 The original LuckSystem enforces strict parameter count matching during script import, which prevents translations from being longer or shorter than the original text. This causes the following error when importing translations:
 
@@ -12,14 +12,14 @@ panic: 导入参数数量不匹配 [operation_index]
 
 This limitation makes it impossible to properly translate visual novels into languages like French, German, or Spanish, which often have longer text than the original Japanese or English.
 
-## ✅ Solution
+##  Solution
 
 This patch modifies `script/script.go` to:
 1. Remove the strict parameter count verification
 2. Add bounds checking to prevent array index out of bounds errors
 3. Allow StringParam to have variable lengths while still correctly recalculating jump offsets
 
-## 🔧 Changes Made
+## Changes Made
 
 ### File Modified: `script/script.go`
 
@@ -85,7 +85,7 @@ case *StringParam:
     pi++
 ```
 
-## 📥 Installation
+##  Installation
 
 ### Option 1: Apply the patch
 ```bash
@@ -99,22 +99,22 @@ go build -o lucksystem
 2. Apply the three modifications listed above
 3. Compile: `go build -o lucksystem`
 
-## 🎮 Tested With
+## Tested With
 
 - **Game:** AIR Steam Version (Key/Visual Arts)
 - **Original Language:** Japanese
 - **Target Language:** French
 - **Result:** Successfully imported translations up to +20% longer than original English text
 
-## ✅ Features
+##  Features
 
 With this patch, you can now:
-- ✅ Use translations of **any length** (shorter or longer than original)
-- ✅ Use proper French typography (`Hya !`, `Mais où ?`, etc.)
-- ✅ No need for space padding to match original length
-- ✅ Jump offsets (GOTO, IFN, IFY, FARCALL, etc.) are automatically recalculated
+- Use translations of **any length** (shorter or longer than original)
+- Use proper French typography (`Hya !`, `Mais où ?`, etc.)
+- No need for space padding to match original length
+- Jump offsets (GOTO, IFN, IFY, FARCALL, etc.) are automatically recalculated
 
-## 📊 Example Results
+##  Example Results
 
 Translation size changes (AIR French translation):
 ```
@@ -125,7 +125,7 @@ seen501: 483434 bytes → 501886 bytes (+3.8%)
 
 All files imported successfully with automatic jump offset recalculation.
 
-## 🛠️ Building
+##  Building
 
 ### Requirements
 - Go 1.16 or higher
@@ -143,7 +143,7 @@ cd LuckSystem-2.3.2
 go build -o lucksystem.exe
 ```
 
-## 📝 Usage
+##  Usage
 
 Same as original LuckSystem:
 
@@ -157,35 +157,35 @@ lucksystem script import \
   -o SCRIPT_TRANSLATED.PAK
 ```
 
-## ⚠️ Important Notes
+##  Important Notes
 
 1. **Backup your original SCRIPT.PAK** before replacing it
 2. Use the **same OPCODE.txt and plugin** for both decompile and import
 3. Test with a **single file first** before processing all scripts
 4. Jump operations must be properly defined in your plugin file
 
-## 🐛 Known Issues
+## Known Issues
 
 None currently. If you encounter issues, please open a GitHub issue with:
 - Your command line
 - The error message
 - A sample of the problematic script file
 
-## 📜 License
+##  License
 
 This patch maintains the same license as the original LuckSystem project.
 
-## 🙏 Credits
+##  Credits
 
 - **Original LuckSystem:** [wetor/LuckSystem](https://github.com/wetor/LuckSystem)
 - **Patch Author:** Yoremi (AIR French translation project)
 - **Testing:** AIR Steam French translation team
 
-## 🔗 Related Projects
+##  Related Projects
 
 - [LuckSystem Original](https://github.com/wetor/LuckSystem)
 - AIR French Translation (link to your translation project)
 
-## 📧 Contact
+##  Contact
 
 For questions or issues specific to this patch, please open a GitHub issue.
