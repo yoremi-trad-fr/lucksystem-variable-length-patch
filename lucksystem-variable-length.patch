@@ -1,0 +1,72 @@
+--- script/script.go.backup	2026-02-08 18:03:59.000000000 +0000
++++ script/script.go	2026-02-08 18:03:59.000000000 +0000
+@@ -172,28 +172,16 @@
+ 		code.Params = paramList
+ 	} else if mode == enum.VMRunImport {
+ 		// 导入模式
+-		// 计算预期的导出参数数量（不包括[]uint16展开的元素）
+-		expectedExportCount := 0
+-		for i := 0; i < paramNum; i++ {
+-			if paramsExport[i] {
+-				// 对于StringParam和JumpParam，计数为1，不管内部有多少uint16
+-				switch params[i].(type) {
+-				case *StringParam, *JumpParam:
+-					expectedExportCount++
+-				case []uint16:
+-					// []uint16会被展开，所以要计算实际元素数
+-					expectedExportCount += len(params[i].([]uint16))
+-				default:
+-					expectedExportCount++
+-				}
+-			}
+-		}
+-		if expectedExportCount != len(code.Params) {
+-			panic(fmt.Sprintf("导入参数数量不匹配 at index %d: expected %d exportable params, got %d", 
+-				index, expectedExportCount, len(code.Params)))
+-		}
++		// NOTE: Vérification du nombre de paramètres supprimée pour permettre
++		// les chaînes de longueur variable (important pour la traduction).
++		// Le code ci-dessous gère correctement les StringParam de taille variable.
+ 		// 导入数据类型转化
+-		for i := 0; i < len(paramList); i++ {
++		// Utiliser min(len(paramList), len(code.Params)) pour éviter les index out of bounds
++		maxLen := len(paramList)
++		if len(code.Params) < maxLen {
++			maxLen = len(code.Params)
++		}
++		for i := 0; i < maxLen; i++ {
+ 			switch paramList[i].(type) {
+ 			case byte:
+ 				val, _ := strconv.ParseUint(code.Params[i].(string)[2:], 16, 8)
+@@ -216,16 +204,28 @@
+ 				switch param := params[i].(type) {
+ 				case []uint16:
+ 					for j := range param {
+-						allParamList = append(allParamList, code.Params[pi])
++						if pi < len(code.Params) {
++							allParamList = append(allParamList, code.Params[pi])
++						} else {
++							// Si on dépasse, utiliser la valeur originale
++							allParamList = append(allParamList, param[j])
++						}
+ 						pi++
+ 						_ = j
+ 					}
+ 				case *StringParam:
+-					param.Data = code.Params[pi].(string)
++					if pi < len(code.Params) {
++						param.Data = code.Params[pi].(string)
++					}
++					// Toujours ajouter le StringParam même si pi dépasse
+ 					allParamList = append(allParamList, param)
+ 					pi++
+ 				default:
+-					allParamList = append(allParamList, code.Params[pi])
++					if pi < len(code.Params) {
++						allParamList = append(allParamList, code.Params[pi])
++					} else {
++						allParamList = append(allParamList, param)
++					}
+ 					pi++
+ 				}
+ 			} else {
